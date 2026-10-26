@@ -4,8 +4,9 @@ import type { Progress } from '../store/types'
 // Nuvem (Supabase): login, progresso sincronizado entre aparelhos e o modo dupla.
 // Sem as variáveis VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY o app funciona só no aparelho.
 
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+// Valores públicos do projeto (a chave publishable é feita para ficar no app; o acesso é protegido por RLS).
+const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined) || 'https://wagrkgbtbsilnkvpjnms.supabase.co'
+const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) || 'sb_publishable_IqkTOfjLe0bvBRe3ompk3w_h7mX02Ab'
 
 export const supabase: SupabaseClient | null = url && anonKey ? createClient(url, anonKey) : null
 export const cloudEnabled = !!supabase
