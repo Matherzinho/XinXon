@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import React, { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { splitSyllables, TONE_COLORS, toneOf } from '../lib/pinyin'
 import { speak } from '../lib/speech'
@@ -6,21 +6,97 @@ import { Icon } from './Icon'
 
 export type Pose = 'torcendo' | 'duvida' | 'pensando' | 'escrevendo' | 'dormindo' | 'caderno'
 
-export function Mascot({ pose, size = 160, bounce = false, alt = '' }: { pose: Pose; size?: number; bounce?: boolean; alt?: string }) {
+export type Mood = 'idle' | 'happy' | 'sad' | 'talk' | 'cheer' | 'peek'
+
+/**
+ * Pandinha animado: respira parado, pula quando você acerta, murcha quando erra,
+ * balança falando. Trocar o `mood` reinicia a animação.
+ */
+export function Mascot({
+  pose,
+  size = 160,
+  bounce = false,
+  alt = '',
+  mood,
+  onClick,
+}: {
+  pose: Pose
+  size?: number
+  bounce?: boolean
+  alt?: string
+  mood?: Mood
+  onClick?: () => void
+}) {
+  const [poked, setPoked] = useState(0)
+  const m = poked ? 'happy' : (mood ?? (bounce ? 'talk' : 'idle'))
   return (
-    <img
-      className={`mascot${bounce ? ' bounce' : ''}`}
-      src={`/mascote/panda-${pose}.png`}
-      alt={alt}
+    <span
+      className={`panda mood-${m}`}
+      key={`${m}-${poked}`}
       style={{ width: size, height: size }}
-      draggable={false}
-    />
+      onClick={() => {
+        // Toque no panda: ele pula de alegria.
+        setPoked((n) => n + 1)
+        window.setTimeout(() => setPoked(0), 700)
+        onClick?.()
+      }}
+    >
+      <span className="panda-shadow" />
+      <img src={`/mascote/panda-${pose}.png`} alt={alt} draggable={false} />
+    </span>
   )
 }
 
-export function Bar({ value, color, thin }: { value: number; color?: 'red' | 'purple'; thin?: boolean }) {
+/** Estrelinhas e brilhos que explodem a partir do centro. */
+export function Burst({ count = 14, colors = ['#FFC93C', '#FF7B7B', '#C9A6FF', '#7EE2AD'] }: { count?: number; colors?: string[] }) {
+  const parts = useMemo(
+    () =>
+      Array.from({ length: count }, (_, i) => {
+        const a = (i / count) * Math.PI * 2 + Math.random() * 0.4
+        const d = 40 + Math.random() * 50
+        return { x: Math.cos(a) * d, y: Math.sin(a) * d, c: colors[i % colors.length], s: 6 + Math.random() * 7, star: i % 3 === 0 }
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [count],
+  )
   return (
-    <div className={`bar${thin ? ' thin' : ''}${color ? ` ${color}` : ''}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
+    <span className="burst" aria-hidden="true">
+      {parts.map((p, i) => (
+        <i
+          key={i}
+          className={p.star ? 'star' : ''}
+          style={{ '--x': `${p.x}px`, '--y': `${p.y}px`, background: p.c, width: p.s, height: p.s } as React.CSSProperties}
+        />
+      ))}
+    </span>
+  )
+}
+
+/** Número que sobe contando (XP, moedas). */
+export function CountUp({ to, ms = 900, prefix = '' }: { to: number; ms?: number; prefix?: string }) {
+  const [v, setV] = useState(0)
+  useEffect(() => {
+    let raf = 0
+    const t0 = performance.now()
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - t0) / ms)
+      setV(Math.round(to * (1 - Math.pow(1 - k, 3))))
+      if (k < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [to, ms])
+  return (
+    <span>
+      {prefix}
+      {v}
+    </span>
+  )
+}
+
+export function Bar({ value, color, thin, shine }: { value: number; color?: 'red' | 'purple'; thin?: boolean; shine?: boolean }) {
+  return (
+    <div className={`bar${thin ? ' thin' : ''}${color ? ` ${color}` : ''}${shine ? ' shine' : ''}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
       <div style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
     </div>
   )

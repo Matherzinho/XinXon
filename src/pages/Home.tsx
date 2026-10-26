@@ -37,7 +37,7 @@ export function Home() {
           XinXon
         </Link>
         <div className="row" style={{ gap: 14 }}>
-          <span className={`stat ${streak.count ? 'fire' : 'muted'}`} title="Ofensiva">
+          <span className={`stat ${streak.count ? 'fire flicker' : 'muted'}`} title="Ofensiva">
             <Icon name="flame" size={20} /> {streak.count}
           </span>
           {progress.streak.freezes > 0 && (
@@ -88,13 +88,13 @@ export function Home() {
 
       {!status.started && progress.xp === 0 && (
         <div className="row">
-          <Mascot pose="pensando" size={96} />
+          <Mascot pose="pensando" size={96} mood="talk" />
           <p className="speech grow">Oi! Eu sou o pandinha do XinXon. Cada sessão leva só 5 minutinhos. Vamos?</p>
         </div>
       )}
 
       <div className="grow" />
-      <button type="button" className="btn block big sticky-cta" onClick={start}>
+      <button type="button" className="btn block big sticky-cta shimmer" onClick={start}>
         {streak.studiedToday ? 'Mais uma rapidinha' : 'Começar · 5 min'}
       </button>
       <BottomNav />

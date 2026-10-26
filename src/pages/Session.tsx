@@ -10,7 +10,7 @@ import type { Reveal } from '../components/exercises/types'
 import { WriteExercise } from '../components/exercises/WriteExercise'
 import { Icon } from '../components/Icon'
 import { ModeToggles } from '../components/ModeToggles'
-import { Bar, Overlay, Pinyin, SpeakerButton } from '../components/ui'
+import { Bar, Burst, Mascot, Overlay, Pinyin, SpeakerButton } from '../components/ui'
 import { buildSession, chooseKind, retryStep, type ExerciseKind, type Mode, type Step } from '../lib/session'
 import { sfx } from '../lib/sounds'
 import { stopSpeaking } from '../lib/speech'
@@ -146,11 +146,15 @@ export function Session() {
           <Icon name="close" />
         </button>
         <div className="grow">
-          <Bar value={progress} />
+          <Bar value={progress} shine={!!answer?.correct} />
         </div>
         <ModeToggles compact canListen={mode.canListen} canSpeak={mode.canSpeak} onChange={updateSettings} />
-        <span className={`combo${combo >= 3 ? ' hot' : ''}`} key={combo}>
-          {combo >= 2 ? `x${combo}` : ''}
+        <span className={`combo${combo >= 3 ? ' hot' : ''}${combo >= 5 ? ' fire' : ''}`} key={combo}>
+          {combo >= 2 && (
+            <>
+              <Icon name="flame" size={16 + Math.min(combo, 8) * 2} /> x{combo}
+            </>
+          )}
         </span>
       </div>
 
@@ -164,9 +168,17 @@ export function Session() {
 
       {answer && (
         <div className={`feedback ${answer.correct ? 'ok' : 'bad'}`} role="status">
+          <div className="feedback-panda">
+            <Mascot pose={answer.correct ? 'torcendo' : 'duvida'} size={86} mood={answer.correct ? 'happy' : 'sad'} />
+            {answer.correct && <Burst count={combo >= 3 ? 20 : 12} />}
+          </div>
           <div className="spread">
-            <span className="title">{answer.text}</span>
-            {answer.correct && <span className="chip yellow">+{combo >= 3 ? 15 : 10} XP</span>}
+            <span className="title pop-in">{answer.text}</span>
+            {answer.correct && (
+              <span className="chip yellow xp-fly" key={combo}>
+                +{combo >= 3 ? 15 : 10} XP
+              </span>
+            )}
           </div>
           {(answer.reveal.hanzi || answer.reveal.pt) && (
             <div className="row" style={{ alignItems: 'flex-start' }}>

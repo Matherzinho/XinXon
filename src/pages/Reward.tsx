@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Icon, Jiaozi } from '../components/Icon'
-import { Confetti, Mascot } from '../components/ui'
+import { Burst, Confetti, CountUp, Mascot } from '../components/ui'
 import { sfx } from '../lib/sounds'
 import { useApp } from '../store/useApp'
 
@@ -17,7 +17,10 @@ export function Reward() {
   return (
     <div className="screen center" style={{ alignItems: 'center', gap: 16 }}>
       <Confetti />
-      <Mascot pose="torcendo" size={220} bounce alt="Panda XinXon comemorando" />
+      <div style={{ position: 'relative' }}>
+        <Mascot pose="torcendo" size={220} mood="cheer" alt="Panda XinXon comemorando" />
+        <Burst count={22} />
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <h1 style={{ color: 'var(--yellow)', fontSize: 30 }}>{title}</h1>
         <span className="hz muted" style={{ fontSize: 20 }}>
@@ -28,7 +31,9 @@ export function Reward() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, width: '100%' }}>
         <div className="card" style={{ border: '2px solid var(--yellow)', padding: 12, gap: 4 }}>
           <span className="label" style={{ color: 'var(--yellow)' }}>XP</span>
-          <span style={{ fontSize: 24, fontWeight: 900 }}>+{result.xp}</span>
+          <span style={{ fontSize: 24, fontWeight: 900 }}>
+            <CountUp to={result.xp} prefix="+" />
+          </span>
         </div>
         <div className="card" style={{ border: '2px solid var(--orange)', padding: 12, gap: 4 }}>
           <span className="label" style={{ color: 'var(--orange)' }}>Ofensiva</span>
@@ -38,7 +43,9 @@ export function Reward() {
         </div>
         <div className="card" style={{ border: '2px solid var(--purple)', padding: 12, gap: 4 }}>
           <span className="label" style={{ color: 'var(--purple-light)' }}>Acertos</span>
-          <span style={{ fontSize: 24, fontWeight: 900 }}>{accuracy}%</span>
+          <span style={{ fontSize: 24, fontWeight: 900 }}>
+            <CountUp to={accuracy} ms={1200} />%
+          </span>
         </div>
       </div>
 
@@ -48,8 +55,10 @@ export function Reward() {
         </div>
       )}
 
-      <div className="card purple pop-in" style={{ width: '100%', flexDirection: 'row', alignItems: 'center', gap: 14, textAlign: 'left' }}>
-        <Jiaozi size={40} />
+      <div className={`card purple reward-chest${result.chest > 0 ? ' has-chest' : ''}`} style={{ width: '100%', flexDirection: 'row', alignItems: 'center', gap: 14, textAlign: 'left' }}>
+        <span className="coin-spin">
+          <Jiaozi size={40} />
+        </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {result.chest > 0 ? (
             <>
