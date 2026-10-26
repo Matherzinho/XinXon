@@ -17,7 +17,6 @@ export async function POST(req: Request): Promise<Response> {
       uses: 1,
       expireTime: new Date(now + 30 * 60_000).toISOString(),
       newSessionExpireTime: new Date(now + 2 * 60_000).toISOString(),
-      liveConnectConstraints: { model: `models/${LIVE_MODEL}` },
     }),
   })
   const text = await r.text()
