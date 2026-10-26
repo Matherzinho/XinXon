@@ -32,8 +32,8 @@ export async function generate(models: string[], body: unknown): Promise<any> {
     if (r.ok) return r.json()
     const text = await r.text()
     last = new GeminiError(`${model}: ${r.status} ${text.slice(0, 300)}`, r.status)
-    // Modelo inexistente, sem acesso ou sem cota: tenta o próximo. Outros erros param aqui.
-    if (![400, 403, 404, 429].includes(r.status)) break
+    // Modelo inexistente, sem acesso, sem cota ou sobrecarregado: tenta o próximo. Outros erros param aqui.
+    if (![400, 403, 404, 429, 500, 503].includes(r.status)) break
   }
   throw last ?? new GeminiError('sem modelos', 500)
 }

@@ -46,6 +46,7 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response(wav(raw, rate), { headers: { 'Content-Type': 'audio/wav', 'Cache-Control': 'public, max-age=31536000, immutable' } })
   } catch (e) {
     const status = e instanceof GeminiError ? e.status : 500
-    return json({ error: (e as Error).message }, status === 503 ? 503 : status === 429 ? 429 : 502)
+    const msg = (e as Error).message
+    return json({ error: msg }, msg.includes('GEMINI_API_KEY') ? 503 : status === 429 || status === 503 ? 429 : 502)
   }
 }
