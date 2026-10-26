@@ -1,4 +1,4 @@
-import { allowed, json } from './_gemini'
+import { allowed, json } from './_gemini.js'
 
 // Cria um token temporário para a ligação de voz com o Prof (Gemini Live).
 // O navegador conecta direto no Google com esse token; a chave de verdade nunca sai do servidor.

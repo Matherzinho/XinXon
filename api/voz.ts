@@ -1,4 +1,4 @@
-import { allowed, generate, GeminiError, json, TTS_MODELS } from './_gemini'
+import { allowed, generate, GeminiError, json, TTS_MODELS } from './_gemini.js'
 
 /** Embrulha áudio PCM 16-bit mono num arquivo WAV. */
 function wav(pcm: Uint8Array, sampleRate = 24000): ArrayBuffer {

@@ -1,4 +1,4 @@
-import { allowed, generate, GeminiError, json, TEXT_MODELS } from './_gemini'
+import { allowed, generate, GeminiError, json, TEXT_MODELS } from './_gemini.js'
 
 interface Msg {
   role: 'user' | 'prof'
