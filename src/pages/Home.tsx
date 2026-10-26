@@ -8,6 +8,10 @@ import { coreItems } from '../content'
 import { currentLesson, dueCount, lessonStatus } from '../lib/progress'
 import { sfx } from '../lib/sounds'
 import { unlockAudio } from '../lib/speech'
+import { dayNumber } from '../lib/date'
+
+// O logo do topo muda a cada dia.
+const LOGOS = ['caligrafia', 'ola', 'caderno', 'conquista', 'sono']
 import { streakToday, useApp, useProfile } from '../store/useApp'
 
 export function Home() {
@@ -33,7 +37,7 @@ export function Home() {
     <div className="screen with-nav">
       <header className="topbar">
         <Link to="/perfil" className="brand" aria-label="Perfil e configurações">
-          <img src="/icons/icon-192.png" alt="" />
+          <img src={`/icons/variantes/${LOGOS[dayNumber() % LOGOS.length]}.png`} alt="" />
           XinXon
         </Link>
         <div className="row" style={{ gap: 14 }}>
