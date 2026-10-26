@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Icon, Jiaozi } from '../components/Icon'
 import { BottomNav, Overlay } from '../components/ui'
 import { cloudEnabled, renameCloud, signOut } from '../lib/cloud'
-import { hasChineseVoice, recognitionSupported, ttsSupported } from '../lib/speech'
+import { recognitionSupported } from '../lib/speech'
 import { useCloud } from '../lib/useCloudSync'
 import { useApp, useProfile } from '../store/useApp'
 import { AuthForm } from './Welcome'
@@ -80,7 +80,7 @@ export function Profile() {
       <div className="card small">
         <span className="label">Neste aparelho</span>
         <span>
-          Voz em chinês: {ttsSupported() && hasChineseVoice() ? <strong style={{ color: 'var(--green)' }}>disponível</strong> : <strong>não encontrada</strong>}
+          Áudio em chinês: <strong style={{ color: 'var(--green)' }}>gravado no app</strong> (funciona em qualquer navegador)
         </span>
         <span>
           Reconhecimento de fala:{' '}

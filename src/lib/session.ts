@@ -62,7 +62,9 @@ export function chooseKind(item: Item, box: number, mode: Mode, stage: 'first' |
       if (stage === 'first') return canListen && Math.random() < 0.4 ? 'listen' : 'meaning'
       const opts: ExerciseKind[] = ['hanzi', 'meaning']
       if (canListen) opts.push('listen')
-      if (canSpeak) opts.push(canListen ? 'pimsleur' : 'speak', canListen ? 'pimsleur' : 'speak')
+      // Palavras como 吗 ("(pergunta de sim/não)") não dão uma boa pergunta "como se diz".
+      const voice = canListen && !item.word.pt.startsWith('(') ? 'pimsleur' : 'speak'
+      if (canSpeak) opts.push(voice, voice)
       if (box >= 3) opts.splice(opts.indexOf('meaning'), 1)
       return pick(opts)
     }

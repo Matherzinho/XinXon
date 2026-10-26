@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Sentence, Word } from '../../content'
-import { bestMatch, listen, recognitionSupported, speak, type ListenHandle } from '../../lib/speech'
+import { bestMatch, listen, promptText, recognitionSupported, speak, type ListenHandle } from '../../lib/speech'
 import { Icon } from '../Icon'
 import { SpeakerButton } from '../ui'
 import type { ExerciseProps } from './types'
@@ -38,7 +38,7 @@ export function SpeakExercise({ step, mode, locked, onAnswer, onSkip }: Exercise
     if (!pimsleur) return
     let cancelled = false
     ;(async () => {
-      await speak(`Como se diz: ${t.pt}?`, 'pt-BR')
+      await speak(promptText(t.pt), 'pt-BR')
       if (cancelled) return
       setPhase('answer')
       if (canRecognize) startListening()

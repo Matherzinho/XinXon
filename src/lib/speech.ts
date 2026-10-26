@@ -1,6 +1,8 @@
 // Áudio do navegador: voz sintetizada (ouvir) e reconhecimento de fala (falar).
 // Tudo gratuito, usando as vozes do próprio celular/computador.
 
+import manifest from '../content/audio.json'
+
 type Lang = 'zh-CN' | 'pt-BR'
 
 let voices: SpeechSynthesisVoice[] = []
@@ -32,13 +34,51 @@ export function hasChineseVoice(): boolean {
   return !!pickVoice('zh-CN')
 }
 
-let rate = 0.85
-export function setSpeechRate(r: number) {
-  rate = r
+// ---------- Áudios gravados (vêm junto com o app, funcionam em qualquer navegador) ----------
+
+const RECORDED = manifest as { zh: Record<string, string>; pt: Record<string, string> }
+
+/** Texto da pergunta do modo Pimsleur ("Como se diz: obrigado?"). */
+export function promptText(pt: string): string {
+  const clean = pt.replace(/\((a|s|as|os)\)/g, '').replace(/[.!?]+$/, '').trim()
+  return `Como se diz: ${clean}?`
 }
 
-/** Fala o texto e resolve quando terminar (ou depois de um tempo limite). */
-export function speak(text: string, lang: Lang = 'zh-CN', customRate?: number): Promise<void> {
+export function hasRecording(text: string, lang: Lang = 'zh-CN'): boolean {
+  return !!(lang === 'zh-CN' ? RECORDED.zh[text] : RECORDED.pt[text])
+}
+
+let player: HTMLAudioElement | null = null
+const getPlayer = () => (player ??= new Audio())
+
+let slow = false
+export function setSpeechRate(r: number) {
+  rate = r
+  slow = r < 0.8
+}
+let rate = 0.85
+
+function playFile(url: string, playbackRate: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const a = getPlayer()
+    a.pause()
+    a.src = url
+    a.playbackRate = playbackRate
+    let done = false
+    const finish = (ok: boolean) => {
+      if (done) return
+      done = true
+      a.onended = a.onerror = null
+      resolve(ok)
+    }
+    a.onended = () => finish(true)
+    a.onerror = () => finish(false)
+    a.play().catch(() => finish(false))
+    setTimeout(() => finish(true), 9000)
+  })
+}
+
+function speakSynth(text: string, lang: Lang, customRate?: number): Promise<void> {
   return new Promise((resolve) => {
     if (!ttsSupported() || !text) return resolve()
     const synth = window.speechSynthesis
@@ -62,12 +102,28 @@ export function speak(text: string, lang: Lang = 'zh-CN', customRate?: number): 
   })
 }
 
+/** Fala o texto: usa o áudio gravado quando existe; se não, a voz do navegador. */
+export async function speak(text: string, lang: Lang = 'zh-CN', customRate?: number): Promise<void> {
+  if (!text) return
+  const id = lang === 'zh-CN' ? RECORDED.zh[text] : RECORDED.pt[text]
+  if (id) {
+    const folder = lang === 'zh-CN' ? 'zh' : 'pt'
+    const ok = await playFile(`/audio/${folder}/${id}.mp3`, lang === 'zh-CN' && slow ? 0.75 : 1)
+    if (ok) return
+  }
+  await speakSynth(text, lang, customRate)
+}
+
 export function stopSpeaking() {
+  player?.pause()
   if (ttsSupported()) window.speechSynthesis.cancel()
 }
 
 /** Chamado num toque do usuário para liberar o áudio no iPhone. */
 export function unlockAudio() {
+  const a = getPlayer()
+  a.src = '/audio/silent.mp3'
+  a.play().catch(() => {})
   if (ttsSupported()) {
     const u = new SpeechSynthesisUtterance(' ')
     u.volume = 0

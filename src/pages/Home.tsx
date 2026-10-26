@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GiftInbox } from '../components/GiftInbox'
 import { Icon, Jiaozi } from '../components/Icon'
@@ -8,7 +7,7 @@ import { Bar, BottomNav, Mascot } from '../components/ui'
 import { coreItems } from '../content'
 import { currentLesson, dueCount, lessonStatus } from '../lib/progress'
 import { sfx } from '../lib/sounds'
-import { hasChineseVoice, ttsSupported, unlockAudio } from '../lib/speech'
+import { unlockAudio } from '../lib/speech'
 import { streakToday, useApp, useProfile } from '../store/useApp'
 
 export function Home() {
@@ -24,14 +23,6 @@ export function Home() {
     .slice(0, 3)
     .map((i) => (i.kind === 'word' ? i.word.hanzi : i.kind === 'tone' ? i.tone.pinyin : ''))
     .filter(Boolean)
-  const [noVoice, setNoVoice] = useState(false)
-
-  useEffect(() => {
-    // As vozes carregam com atraso em alguns navegadores.
-    const t = window.setTimeout(() => setNoVoice(settings.canListen && (!ttsSupported() || !hasChineseVoice())), 1500)
-    return () => window.clearTimeout(t)
-  }, [settings.canListen])
-
   const start = () => {
     unlockAudio()
     sfx.unlock()
@@ -74,12 +65,6 @@ export function Home() {
       </p>
 
       <ModeToggles canListen={settings.canListen} canSpeak={settings.canSpeak} onChange={updateSettings} />
-      {noVoice && (
-        <p className="small muted">
-          Este navegador não tem voz em chinês instalada, então o áudio pode não tocar. No celular, o Chrome (Android) e o Safari (iPhone) costumam
-          funcionar melhor.
-        </p>
-      )}
 
       <div className="card outline-red">
         <div className="spread">
