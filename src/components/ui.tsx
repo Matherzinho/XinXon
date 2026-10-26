@@ -30,14 +30,21 @@ export function BottomNav() {
   const items = [
     { to: '/', icon: 'home', label: 'Início' },
     { to: '/trilha', icon: 'path', label: 'Trilha' },
+    { to: '/prof', icon: 'chat', label: 'Prof' },
     { to: '/caderno', icon: 'book', label: 'Caderno' },
     { to: '/dupla', icon: 'heart', label: 'Dupla' },
   ]
   return (
     <nav className="nav" aria-label="Navegação principal">
       {items.map((i) => (
-        <NavLink key={i.to} to={i.to} end className={({ isActive }) => (isActive ? 'active' : '')}>
-          <Icon name={i.icon} />
+        <NavLink key={i.to} to={i.to} end className={({ isActive }) => `${isActive ? 'active' : ''}${i.to === '/prof' ? ' prof-tab' : ''}`}>
+          {i.to === '/prof' ? (
+            <span className="prof-badge">
+              <img src="/mascote/panda-pensando.png" alt="" />
+            </span>
+          ) : (
+            <Icon name={i.icon} />
+          )}
           {i.label}
         </NavLink>
       ))}

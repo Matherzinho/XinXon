@@ -58,7 +58,8 @@ export function setSpeechRate(r: number) {
 }
 let rate = 0.85
 
-function playFile(url: string, playbackRate: number): Promise<boolean> {
+/** Toca um arquivo de áudio qualquer pelo mesmo player (resolve false se falhar). */
+export function playFile(url: string, playbackRate = 1): Promise<boolean> {
   return new Promise((resolve) => {
     const a = getPlayer()
     a.pause()

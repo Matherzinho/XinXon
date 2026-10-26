@@ -377,7 +377,7 @@ p {
   width: 100%;
   max-width: 540px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   background: rgba(20, 16, 28, 0.96);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--line);
@@ -1130,4 +1130,155 @@ p {
   .screen {
     padding-top: 32px;
   }
+}
+
+/* ---------- Prof. Zhonghua ---------- */
+
+.nav a.prof-tab {
+  position: relative;
+}
+
+.prof-badge {
+  width: 48px;
+  height: 48px;
+  margin-top: -22px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 3px solid var(--bg);
+  box-shadow: 0 4px 0 var(--red-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.prof-badge img {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  object-position: 30% 20%;
+}
+
+.nav a.prof-tab.active .prof-badge {
+  background: var(--yellow);
+  box-shadow: 0 4px 0 var(--yellow-dark);
+}
+
+.prof-screen {
+  padding-bottom: 260px;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubble {
+  max-width: 86%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: pop 0.25s;
+}
+
+.bubble.prof {
+  align-self: flex-start;
+  background: var(--surface);
+  border-bottom-left-radius: 6px;
+}
+
+.bubble.me {
+  align-self: flex-end;
+  background: var(--purple);
+  color: #fff;
+  font-weight: 700;
+  border-bottom-right-radius: 6px;
+}
+
+.bubble.typing {
+  flex-direction: row;
+  gap: 6px;
+  padding: 14px 16px;
+}
+
+.bubble.typing span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: bounce 0.9s infinite;
+}
+
+.bubble.typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.bubble.typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.composer {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(66px + env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: 540px;
+  padding: 8px 12px 10px;
+  background: rgba(20, 16, 28, 0.97);
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 9;
+}
+
+.quick {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.quick .chip {
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 34px;
+  font-size: 13px;
+}
+
+.suggestions {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  align-items: center;
+  scrollbar-width: none;
+}
+
+.suggestion {
+  appearance: none;
+  border: 2px solid var(--yellow);
+  background: #2a2210;
+  border-radius: 14px;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.suggestion .hz {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.listening-btn {
+  color: var(--orange) !important;
+  animation: pulse 0.9s infinite;
 }

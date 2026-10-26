@@ -7,6 +7,7 @@ import { useCloud, useCloudSync } from './lib/useCloudSync'
 import { Duo } from './pages/Duo'
 import { Home } from './pages/Home'
 import { Notebook } from './pages/Notebook'
+import { Prof } from './pages/Prof'
 import { Profile } from './pages/Profile'
 import { Reward } from './pages/Reward'
 import { Session } from './pages/Session'
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/sessao" element={<NeedsProfile><Session /></NeedsProfile>} />
           <Route path="/recompensa" element={<NeedsProfile><Reward /></NeedsProfile>} />
           <Route path="/trilha" element={<NeedsProfile><Trail /></NeedsProfile>} />
+          <Route path="/prof" element={<NeedsProfile><Prof /></NeedsProfile>} />
           <Route path="/caderno" element={<NeedsProfile><Notebook /></NeedsProfile>} />
           <Route path="/dupla" element={<NeedsProfile><Duo /></NeedsProfile>} />
           <Route path="/perfil" element={<NeedsProfile><Profile /></NeedsProfile>} />
