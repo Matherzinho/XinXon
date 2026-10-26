@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { CallScreen, type CallLine } from '../components/CallScreen'
 import { Icon } from '../components/Icon'
 import { BottomNav, Pinyin } from '../components/ui'
 import { ITEMS } from '../content'
@@ -58,6 +59,7 @@ export function Prof() {
   const [micLang, setMicLang] = useState<'zh-CN' | 'pt-BR'>('zh-CN')
   const [listening, setListening] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
+  const [inCall, setInCall] = useState(false)
 
   const known = Object.keys(profile.progress.items)
     .map((id) => ITEMS[id])
@@ -135,6 +137,12 @@ export function Prof() {
           </h2>
           <span className="small muted">Fala chinês e português. Pode perguntar qualquer coisa!</span>
         </div>
+        <button type="button" className="icon-btn" aria-label="Ligar para o Prof" title="Ligar para o Prof" style={{ color: 'var(--green)' }} onClick={() => {
+          stopSpeaking()
+          setInCall(true)
+        }}>
+          <Icon name="phone" />
+        </button>
         <button
           type="button"
           className="icon-btn"
@@ -148,6 +156,13 @@ export function Prof() {
           <Icon name="refresh" />
         </button>
       </header>
+
+      <button type="button" className="btn green block" onClick={() => {
+        stopSpeaking()
+        setInCall(true)
+      }}>
+        <Icon name="phone" /> Ligar para o Prof (conversa por voz)
+      </button>
 
       <div className="chat">
         {msgs.map((m) =>
@@ -257,6 +272,21 @@ export function Prof() {
         </form>
       </div>
       <BottomNav />
+      {inCall && (
+        <CallScreen
+          name={profile.name}
+          known={known}
+          onEnd={(lines: CallLine[]) => {
+            setInCall(false)
+            if (!lines.length) return
+            // Guarda o que foi dito na ligação na conversa, para rever depois.
+            const added: ChatMsg[] = lines.map((l) =>
+              l.role === 'user' ? { id: uid(), role: 'user', text: `🎙️ ${l.text}` } : { id: uid(), role: 'prof', parts: [{ tipo: 'pt', texto: `🎙️ ${l.text}` }] },
+            )
+            setMsgs((m) => [...m, ...added])
+          }}
+        />
+      )}
     </div>
   )
 }

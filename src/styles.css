@@ -1282,3 +1282,108 @@ p {
   color: var(--orange) !important;
   animation: pulse 0.9s infinite;
 }
+
+/* ---------- Ligação com o Prof ---------- */
+
+.call {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: radial-gradient(circle at 50% 20%, #2e2140 0%, var(--bg) 60%);
+  display: flex;
+  flex-direction: column;
+  padding: calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+  gap: 16px;
+  max-width: 540px;
+  margin: 0 auto;
+  animation: fade 0.2s;
+}
+
+.call-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.call-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--line);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.call-avatar img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.call-avatar.speaking {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 10px rgba(255, 201, 60, 0.15);
+  animation: pulse 1s infinite;
+}
+
+.call-avatar.listening {
+  border-color: var(--green);
+}
+
+.call-transcript {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(34, 26, 46, 0.6);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.call-transcript p {
+  font-size: 15px;
+}
+
+.call-transcript p.me strong {
+  color: var(--purple-light);
+}
+
+.call-transcript p.prof strong {
+  color: var(--yellow);
+}
+
+.call-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.call-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface-2);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.call-btn.off {
+  background: var(--line);
+  color: var(--muted);
+}
+
+.call-btn.hang {
+  background: var(--red);
+  color: #fff;
+  transform: rotate(135deg);
+}
