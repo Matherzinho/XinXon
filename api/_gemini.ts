@@ -23,6 +23,7 @@ export async function generate(models: string[], body: Record<string, any>, perM
   const key = process.env.GEMINI_API_KEY
   if (!key) throw new GeminiError('GEMINI_API_KEY não configurada', 503)
   let last: GeminiError | null = null
+  const errors: string[] = []
   const started = Date.now()
   for (const model of models) {
     if (Date.now() - started > 45000) break
@@ -40,6 +41,7 @@ export async function generate(models: string[], body: Record<string, any>, perM
         if (r.ok) return r.json()
         const text = await r.text()
         last = new GeminiError(`${model}: ${r.status} ${text.slice(0, 300)}`, r.status)
+        errors.push(last.message.slice(0, 160))
         // Modelo que não aceita a configuração de "pensamento": tenta de novo sem ela.
         if (r.status === 400 && /thinking/i.test(text) && payload.generationConfig?.thinkingConfig) {
           const { thinkingConfig: _drop, ...gen } = payload.generationConfig
@@ -49,14 +51,17 @@ export async function generate(models: string[], body: Record<string, any>, perM
         if (![400, 403, 404, 429, 500, 503].includes(r.status)) throw last
       } catch (e) {
         if (e instanceof GeminiError && ![400, 403, 404, 429, 500, 503].includes(e.status)) throw e
-        if (!(e instanceof GeminiError)) last = new GeminiError(`${model}: demorou demais`, 504)
+        if (!(e instanceof GeminiError)) {
+          last = new GeminiError(`${model}: demorou demais`, 504)
+          errors.push(last.message)
+        }
       } finally {
         clearTimeout(timer)
       }
       break
     }
   }
-  throw last ?? new GeminiError('sem modelos', 500)
+  throw new GeminiError(errors.join(' | ') || 'sem modelos', last?.status ?? 500)
 }
 
 /** Só aceita chamadas do próprio app (evita que outros sites gastem a cota). */
