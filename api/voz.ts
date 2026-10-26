@@ -1,7 +1,5 @@
 import { allowed, generate, GeminiError, json, TTS_MODELS } from './_gemini'
 
-export const config = { runtime: 'edge' }
-
 /** Embrulha áudio PCM 16-bit mono num arquivo WAV. */
 function wav(pcm: Uint8Array, sampleRate = 24000): ArrayBuffer {
   const out = new Uint8Array(44 + pcm.length)
@@ -25,8 +23,7 @@ function wav(pcm: Uint8Array, sampleRate = 24000): ArrayBuffer {
 }
 
 /** Fala um texto em chinês (mandarim) com a voz do Gemini. */
-export default async function handler(req: Request): Promise<Response> {
-  if (req.method !== 'POST') return json({ error: 'use POST' }, 405)
+export async function POST(req: Request): Promise<Response> {
   if (!allowed(req)) return json({ error: 'origem não permitida' }, 403)
   const { text, slow } = (await req.json().catch(() => ({}))) as { text?: string; slow?: boolean }
   const t = String(text ?? '').slice(0, 200)

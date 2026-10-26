@@ -1,7 +1,5 @@
 import { allowed, generate, GeminiError, json, TEXT_MODELS } from './_gemini'
 
-export const config = { runtime: 'edge' }
-
 interface Msg {
   role: 'user' | 'prof'
   text: string
@@ -49,8 +47,7 @@ const SCHEMA = {
   required: ['partes'],
 }
 
-export default async function handler(req: Request): Promise<Response> {
-  if (req.method !== 'POST') return json({ error: 'use POST' }, 405)
+export async function POST(req: Request): Promise<Response> {
   if (!allowed(req)) return json({ error: 'origem não permitida' }, 403)
   let body: { history?: Msg[]; known?: string[]; name?: string }
   try {
@@ -67,7 +64,14 @@ export default async function handler(req: Request): Promise<Response> {
     const data = await generate(TEXT_MODELS, {
       systemInstruction: { parts: [{ text: `${SYSTEM}\n\nNome do aluno: ${name}\nPalavras que o aluno já estudou: ${known}` }] },
       contents: history.map((m) => ({ role: m.role === 'prof' ? 'model' : 'user', parts: [{ text: m.text }] })),
-      generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA, temperature: 0.8, maxOutputTokens: 800 },
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: SCHEMA,
+        temperature: 0.8,
+        maxOutputTokens: 1200,
+        // Conversa rápida: pouco "pensamento" antes de responder.
+        thinkingConfig: { thinkingLevel: 'low' },
+      },
     })
     const text: string = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? '').join('') ?? ''
     const parsed = JSON.parse(text)
