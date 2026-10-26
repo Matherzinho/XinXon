@@ -1756,3 +1756,220 @@ p {
     transform: scale(1.05);
   }
 }
+
+/* ---------- Mapa da trilha ---------- */
+
+.trail-map {
+  position: relative;
+}
+
+.trail-bg {
+  position: relative;
+  width: 390px;
+  max-width: 100%;
+  margin: 0 auto;
+  background: linear-gradient(#1b1530 0px, #183324 170px, #173022 100%);
+  overflow: hidden;
+  border-radius: 0 0 24px 24px;
+}
+
+@media (min-width: 391px) {
+  .trail-bg {
+    width: 390px;
+  }
+}
+
+.trail-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.trail-dash {
+  animation: trail-dash 1.5s linear infinite;
+}
+
+@keyframes trail-dash {
+  to {
+    stroke-dashoffset: -38;
+  }
+}
+
+.trail-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  padding: 20px 16px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(#1b1530, rgba(27, 21, 48, 0));
+  z-index: 3;
+}
+
+.trail-banner {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  border-radius: 16px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 2;
+}
+
+.trail-banner.u0 {
+  background: #2a1418;
+  border: 2px solid var(--red);
+  box-shadow: 0 4px 0 var(--red-dark);
+}
+
+.trail-banner.u0 .label {
+  color: var(--red-soft);
+}
+
+.trail-banner.u1 {
+  background: var(--surface-2);
+  border: 2px solid var(--purple);
+  box-shadow: 0 4px 0 #6a35ad;
+}
+
+.trail-banner.u1 .label {
+  color: var(--purple-light);
+}
+
+.trail-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.trail-node.done {
+  width: 68px;
+  height: 68px;
+  background: var(--yellow);
+  color: #2a1a00;
+  box-shadow: 0 6px 0 var(--yellow-dark);
+}
+
+.trail-node.current {
+  width: 84px;
+  height: 84px;
+  background: var(--red);
+  color: #fff;
+  font-size: 32px;
+  box-shadow: 0 7px 0 var(--red-dark), 0 0 0 8px rgba(229, 56, 59, 0.25);
+  animation: node-pulse 1.6s ease-in-out infinite;
+}
+
+.trail-node.current .ring {
+  position: absolute;
+  inset: -12px;
+  width: calc(100% + 24px);
+  height: calc(100% + 24px);
+}
+
+.trail-node.locked {
+  width: 60px;
+  height: 60px;
+  background: #3a3048;
+  color: #8a7f9c;
+  font-size: 24px;
+  box-shadow: 0 5px 0 #241c30;
+  cursor: default;
+}
+
+@keyframes node-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.07);
+  }
+}
+
+.trail-label {
+  position: absolute;
+  margin-top: 0;
+  transform: translateY(calc(-50% + var(--y, 0px)));
+  z-index: 2;
+  max-width: 150px;
+}
+
+.trail-label span {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: rgba(20, 16, 28, 0.78);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.trail-label span.locked {
+  color: #a79bb8;
+}
+
+.trail-go {
+  position: absolute;
+  width: 120px;
+  min-height: 44px;
+  font-size: 16px;
+  z-index: 3;
+}
+
+.trail-panda {
+  position: absolute;
+  width: 84px;
+  height: 96px;
+  z-index: 4;
+  transition: left 0.65s ease-in-out, top 0.65s ease-in-out;
+  pointer-events: none;
+}
+
+.trail-panda img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: panda-jump 1.4s ease-in-out infinite;
+  transform-origin: 50% 95%;
+}
+
+.trail-panda.walking img {
+  animation: panda-jump 0.35s ease-in-out infinite;
+}
+
+.trail-prop {
+  position: absolute;
+  z-index: 1;
+}
+
+.trail-prop.lantern {
+  animation: floaty 3s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.trail-chest {
+  position: absolute;
+  width: 120px;
+  text-align: center;
+  z-index: 2;
+}
