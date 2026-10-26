@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { ToneSyllable } from '../../content'
+import { LESSONS, type ToneSyllable } from '../../content'
+import { speak } from '../../lib/speech'
 import { stripTones, TONE_NAMES, TONE_PATHS } from '../../lib/pinyin'
 import { SpeakerButton } from '../ui'
 import type { ExerciseProps } from './types'
@@ -20,10 +21,24 @@ export function ToneExercise({ step, mode, locked, onAnswer }: ExerciseProps) {
   const options = syl.tone === 0 ? [1, 2, 3, 4, 0] : [1, 2, 3, 4]
   const byEar = mode.canListen
 
-  const choose = (t: number) => {
+  // Mesma sílaba nos outros tons (ex.: mā má mǎ mà), para ouvir cada opção.
+  const base = stripTones(syl.pinyin)
+  const variants = LESSONS.flatMap((l) => l.tones ?? []).filter((v) => stripTones(v.pinyin) === base)
+  const sample = (t: number) => variants.find((v) => v.tone === t)?.hanzi
+  const [picked, setPicked] = useState<number | null>(null)
+
+  const confirm = (t: number) => {
     if (locked || chosen !== null) return
     setChosen(t)
     onAnswer(t === syl.tone, { hanzi: syl.hanzi, pinyin: syl.pinyin, pt: syl.pt, note: TONE_NAMES[syl.tone] })
+  }
+  // De ouvido: tocar uma opção faz ela soar; depois confirma embaixo.
+  const choose = (t: number) => {
+    if (locked || chosen !== null) return
+    if (!byEar) return confirm(t)
+    setPicked(t)
+    const hz = sample(t)
+    if (hz) void speak(hz)
   }
 
   return (
@@ -38,7 +53,7 @@ export function ToneExercise({ step, mode, locked, onAnswer }: ExerciseProps) {
       </div>
       <div className="choices two">
         {options.map((t) => {
-          const cls = chosen === null ? '' : t === syl.tone ? ' correct' : t === chosen ? ' wrong' : ''
+          const cls = chosen === null ? (picked === t ? ' selected' : '') : t === syl.tone ? ' correct' : t === chosen ? ' wrong' : ''
           return (
             <button key={t} type="button" className={`choice${cls}`} disabled={chosen !== null || locked} onClick={() => choose(t)}>
               <ToneShape tone={t} />
@@ -48,6 +63,14 @@ export function ToneExercise({ step, mode, locked, onAnswer }: ExerciseProps) {
           )
         })}
       </div>
+      {byEar && chosen === null && (
+        <>
+          <p className="center small muted">Toque nos tons para ouvir cada um e confirme o que você ouviu.</p>
+          <button type="button" className="btn block" disabled={picked === null || locked} onClick={() => picked !== null && confirm(picked)}>
+            Confirmar
+          </button>
+        </>
+      )}
     </div>
   )
 }
