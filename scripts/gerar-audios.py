@@ -1,4 +1,8 @@
-"""Gera os áudios do XinXon com vozes offline (sherpa-onnx).
+"""Gera os áudios do XinXon com vozes offline.
+
+Uso: npx tsx scripts/list-audio.ts > $TTS_DIR/texts.json && python3 scripts/gerar-audios.py
+Modelos (baixar em github.com/k2-fsa/sherpa-onnx/releases): matcha-icefall-zh-baker, vocos-22khz-univ.onnx,
+vits-piper-pt_BR-faber-medium. Requer: pip install sherpa-onnx soundfile piper-tts; ffmpeg.
 
 zh: matcha-icefall-zh-baker (+ vocos) · pt-BR: piper faber (CC0)
 Saída: <app>/public/audio/{zh,pt}/<id>.mp3 e <app>/src/content/audio.json
@@ -8,8 +12,8 @@ import hashlib, json, os, re, shutil, subprocess, sys, tempfile, unicodedata
 import sherpa_onnx
 import soundfile as sf
 
-APP = '/home/claude/xinxon'
-TTS = '/home/claude/tts'
+APP = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+TTS = os.environ.get('TTS_DIR', 'tts-modelos')  # pasta com os modelos de voz baixados
 texts = json.load(open(f'{TTS}/texts.json'))
 
 # ---------- léxico: acrescenta palavras do conteúdo que faltam, com o pinyin certo ----------

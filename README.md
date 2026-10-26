@@ -53,4 +53,10 @@ VITE_SUPABASE_ANON_KEY=...
 ## Créditos
 
 - Dados de traços dos caracteres: [Make Me a Hanzi](https://github.com/skishore/makemeahanzi) via [Hanzi Writer](https://hanziwriter.org) (Arphic Public License).
+- Áudio em chinês: voz gerada com [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (modelo Matcha treinado no dataset Baker, uso não comercial).
+- Áudio em português: voz Piper pt_BR "faber" (dataset CC0).
 - Mascote: arte do panda-vermelho criada pelo autor do projeto.
+
+## Adicionar conteúdo com áudio
+
+Depois de editar `src/content/`, gere os áudios novos com `scripts/gerar-audios.py` (instruções no topo do arquivo). Textos sem áudio gravado usam a voz do navegador.
