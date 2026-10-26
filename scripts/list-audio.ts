@@ -23,6 +23,11 @@ for (const l of LESSONS) {
   for (const c of l.trace) add(c)
 }
 for (const c of Object.keys(CHARS)) add(c)
+// Cada caractere das palavras e frases sozinho (para ouvir sílaba por sílaba).
+for (const l of LESSONS) {
+  for (const w of l.words) for (const c of w.hanzi) add(c)
+  for (const s of l.sentences) for (const c of s.hanzi) if (/[\u4e00-\u9fff]/.test(c)) add(c)
+}
 for (const w of WISDOM) add(w.hanzi, w.pinyin)
 
 console.log(JSON.stringify({ zh: [...zh].map(([text, pinyin]) => ({ text, pinyin })), pt: [...pt] }, null, 1))

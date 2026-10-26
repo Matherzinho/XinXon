@@ -77,10 +77,14 @@ export function buildSession(progress: Progress, settings: Settings, mode: Mode)
   const state = (id: string) => progress.items[id]
   const steps: Step[] = []
 
-  // 1) Dicas da lição na primeira vez.
-  if (!progress.tipsSeen.includes(lesson.id)) {
-    for (const tip of lesson.tips) steps.push({ type: 'tip', key: key(), lesson, tip })
+  // 1) Dicas da lição na primeira vez: a primeira logo no começo, as outras intercaladas
+  //    com os itens novos (uma explicação curta por vez, em vez de um paredão de texto).
+  const tips = progress.tipsSeen.includes(lesson.id) ? [] : [...lesson.tips]
+  const pushTip = () => {
+    const tip = tips.shift()
+    if (tip) steps.push({ type: 'tip', key: key(), lesson, tip })
   }
+  pushTip()
 
   // 2) Itens novos (máx. 3; 4 nas lições de tons e sons, que são rápidas).
   const core = coreItems(lesson.id)
@@ -106,6 +110,7 @@ export function buildSession(progress: Progress, settings: Settings, mode: Mode)
   const reviewQueue = [...reviews]
   const later: Step[] = []
   for (const item of newItems) {
+    pushTip()
     if (item.kind === 'word' || item.kind === 'tone') steps.push({ type: 'intro', key: key(), item })
     steps.push({ type: 'exercise', key: key(), item, kind: chooseKind(item, 0, mode, 'first') })
     const delayed = later.shift()
@@ -114,6 +119,7 @@ export function buildSession(progress: Progress, settings: Settings, mode: Mode)
     if (rev) steps.push({ type: 'exercise', key: key(), item: rev, kind: chooseKind(rev, state(rev.id)?.box ?? 0, mode, 'review') })
     if (item.kind !== 'quiz') later.push({ type: 'exercise', key: key(), item, kind: chooseKind(item, 1, mode, 'second') })
   }
+  while (tips.length) pushTip()
   steps.push(...later)
   for (const rev of reviewQueue) steps.push({ type: 'exercise', key: key(), item: rev, kind: chooseKind(rev, state(rev.id)?.box ?? 0, mode, 'review') })
   for (const ex of extras) steps.push({ type: 'exercise', key: key(), item: ex, kind: chooseKind(ex, state(ex.id)?.box ?? 0, mode, 'review') })

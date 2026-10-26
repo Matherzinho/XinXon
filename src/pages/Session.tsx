@@ -10,7 +10,7 @@ import type { Reveal } from '../components/exercises/types'
 import { WriteExercise } from '../components/exercises/WriteExercise'
 import { Icon } from '../components/Icon'
 import { ModeToggles } from '../components/ModeToggles'
-import { Bar, Overlay } from '../components/ui'
+import { Bar, Overlay, Pinyin, SpeakerButton } from '../components/ui'
 import { buildSession, chooseKind, retryStep, type ExerciseKind, type Mode, type Step } from '../lib/session'
 import { sfx } from '../lib/sounds'
 import { stopSpeaking } from '../lib/speech'
@@ -68,6 +68,7 @@ export function Session() {
 
   const finish = () => {
     stopSpeaking()
+    if (tipLesson) markTipsSeen(tipLesson)
     const s = stats.current
     const perfect = s.total > 0 && s.correct === s.total
     finishSession({
@@ -85,7 +86,6 @@ export function Session() {
   const next = () => {
     stopSpeaking()
     setAnswer(null)
-    if (step?.type === 'tip' && queue[index + 1]?.type !== 'tip' && tipLesson) markTipsSeen(tipLesson)
     if (index + 1 >= queue.length) finish()
     else setIndex(index + 1)
   }
@@ -169,16 +169,23 @@ export function Session() {
             {answer.correct && <span className="chip yellow">+{combo >= 3 ? 15 : 10} XP</span>}
           </div>
           {(answer.reveal.hanzi || answer.reveal.pt) && (
-            <div>
+            <div className="row" style={{ alignItems: 'flex-start' }}>
+              <div className="grow">
               {!answer.correct && <div className="small muted">Resposta certa:</div>}
               {answer.reveal.hanzi && (
                 <span className="hz" style={{ fontSize: 22, fontWeight: 700, marginRight: 8 }}>
                   {answer.reveal.hanzi}
                 </span>
               )}
-              {answer.reveal.pinyin && <span style={{ marginRight: 8 }}>{answer.reveal.pinyin}</span>}
+              {answer.reveal.pinyin && (
+                <span style={{ marginRight: 8 }}>
+                  <Pinyin text={answer.reveal.pinyin} />
+                </span>
+              )}
               {answer.reveal.pt && <span className="muted">· {answer.reveal.pt}</span>}
               {answer.reveal.note && <div className="small" style={{ marginTop: 4 }}>{answer.reveal.note}</div>}
+              </div>
+              {mode.canListen && answer.reveal.hanzi && <SpeakerButton text={answer.reveal.hanzi} small label="Ouvir a resposta" />}
             </div>
           )}
           <button type="button" className={`btn block ${answer.correct ? 'green' : ''}`} onClick={next} autoFocus>

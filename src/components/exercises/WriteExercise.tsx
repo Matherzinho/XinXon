@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { CharInfo } from '../../content'
 import { ALL_WORDS } from '../../content'
 import { speak } from '../../lib/speech'
+import { Pinyin } from '../ui'
 import type { ExerciseProps } from './types'
 
 export const loadChar = (char: string, onLoad: (data: CharacterJson) => void, onError: (err?: unknown) => void) => {
@@ -84,6 +85,15 @@ export function WriteExercise({ step, mode, box, locked, onAnswer }: ExercisePro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage])
 
+  const replay = () => {
+    const writer = writerRef.current
+    if (!writer || stage !== 'quiz') return
+    writer.cancelQuiz()
+    setStage('demo')
+    if (mode.canListen) void speak(char)
+    writer.animateCharacter({ onComplete: () => window.setTimeout(() => setStage('quiz'), 400) })
+  }
+
   return (
     <div className="screen" style={{ padding: 0, gap: 14 }}>
       <h2>
@@ -101,8 +111,13 @@ export function WriteExercise({ step, mode, box, locked, onAnswer }: ExercisePro
       )}
       <div className="spread small muted">
         <span>{stage === 'demo' ? 'Observe a ordem dos traços…' : strokeInfo || 'Comece pelo primeiro traço'}</span>
-        {pinyin && <span>{pinyin}</span>}
+        {pinyin && <Pinyin text={pinyin} />}
       </div>
+      {stage === 'quiz' && !failed && !locked && (
+        <button type="button" className="btn ghost block" onClick={replay}>
+          Ver a animação de novo
+        </button>
+      )}
       {failed && !locked && (
         <button type="button" className="btn block" onClick={() => onAnswer(true, { hanzi: char, pinyin, pt: info.meaning })}>
           Continuar

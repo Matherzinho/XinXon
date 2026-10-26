@@ -27,8 +27,14 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,json,webmanifest,mp3}'],
+        globIgnores: ['**/audio/zh-lento/**'],
         navigateFallback: '/index.html',
         runtimeCaching: [
+          {
+            urlPattern: /\/audio\/zh-lento\/.*\.mp3$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'audio-lento', expiration: { maxEntries: 400 } },
+          },
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
             handler: 'CacheFirst',

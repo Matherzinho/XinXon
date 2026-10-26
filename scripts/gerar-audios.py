@@ -132,8 +132,8 @@ def synth(tts, text, out_mp3, speed=1.0, pad=0.12):
         os.unlink(tmp.name)
 
 
-manifest = {'zh': {}, 'pt': {}}
-for lang in ('zh', 'pt'):
+manifest = {'zh': {}, 'zhSlow': {}, 'pt': {}}
+for lang in ('zh', 'zh-lento', 'pt'):
     os.makedirs(f'{APP}/public/audio/{lang}', exist_ok=True)
 
 for item in texts['zh']:
@@ -145,6 +145,11 @@ for item in texts['zh']:
     if not os.path.exists(out):
         synth(zh_tts, t, out, speed=speed)
     manifest['zh'][t] = fid
+    # Versão bem devagar (botão da tartaruga), gravada lenta em vez de só esticar o áudio.
+    slow_out = f'{APP}/public/audio/zh-lento/{fid}.mp3'
+    if not os.path.exists(slow_out):
+        synth(zh_tts, t, slow_out, speed=0.6)
+    manifest['zhSlow'][t] = fid
 
 for p in texts['pt']:
     clean = re.sub(r'\((a|s|as|os)\)', '', p)

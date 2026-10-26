@@ -697,6 +697,77 @@ p {
   color: var(--red-soft);
 }
 
+.speaker-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  align-self: center;
+}
+
+.speaker.turtle {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  color: var(--purple-light);
+  box-shadow: 0 4px 0 #1c1526;
+}
+
+.speaker.small + .speaker.turtle {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+}
+
+.pinyin {
+  font-weight: 800;
+}
+
+.syllables {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.syllable {
+  appearance: none;
+  border: 2px solid var(--line);
+  border-bottom-width: 4px;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 800;
+  cursor: pointer;
+  min-width: 52px;
+  min-height: 44px;
+}
+
+.syllable .hz {
+  font-size: 22px;
+}
+
+.tips-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tone-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 /* ---------- Formulários ---------- */
 
 .field {

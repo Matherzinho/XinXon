@@ -36,7 +36,7 @@ export function hasChineseVoice(): boolean {
 
 // ---------- Áudios gravados (vêm junto com o app, funcionam em qualquer navegador) ----------
 
-const RECORDED = manifest as { zh: Record<string, string>; pt: Record<string, string> }
+const RECORDED = manifest as { zh: Record<string, string>; zhSlow?: Record<string, string>; pt: Record<string, string> }
 
 /** Texto da pergunta do modo Pimsleur ("Como se diz: obrigado?"). */
 export function promptText(pt: string): string {
@@ -102,16 +102,25 @@ function speakSynth(text: string, lang: Lang, customRate?: number): Promise<void
   })
 }
 
-/** Fala o texto: usa o áudio gravado quando existe; se não, a voz do navegador. */
-export async function speak(text: string, lang: Lang = 'zh-CN', customRate?: number): Promise<void> {
+/**
+ * Fala o texto: usa o áudio gravado quando existe; se não, a voz do navegador.
+ * `veryslow` toca a versão gravada bem devagar (botão da tartaruga).
+ */
+export async function speak(text: string, lang: Lang = 'zh-CN', opts: { veryslow?: boolean } = {}): Promise<void> {
   if (!text) return
+  if (lang === 'zh-CN' && opts.veryslow) {
+    const sid = RECORDED.zhSlow?.[text]
+    if (sid && (await playFile(`/audio/zh-lento/${sid}.mp3`, 1))) return
+    if (RECORDED.zh[text] && (await playFile(`/audio/zh/${RECORDED.zh[text]}.mp3`, 0.65))) return
+    return speakSynth(text, lang, 0.5)
+  }
   const id = lang === 'zh-CN' ? RECORDED.zh[text] : RECORDED.pt[text]
   if (id) {
     const folder = lang === 'zh-CN' ? 'zh' : 'pt'
-    const ok = await playFile(`/audio/${folder}/${id}.mp3`, lang === 'zh-CN' && slow ? 0.75 : 1)
+    const ok = await playFile(`/audio/${folder}/${id}.mp3`, lang === 'zh-CN' && slow ? 0.8 : 1)
     if (ok) return
   }
-  await speakSynth(text, lang, customRate)
+  await speakSynth(text, lang)
 }
 
 export function stopSpeaking() {
@@ -151,7 +160,9 @@ function recognitionCtor(): (new () => RecognitionLike) | undefined {
   return (w.SpeechRecognition ?? w.webkitSpeechRecognition) as (new () => RecognitionLike) | undefined
 }
 
-export const recognitionSupported = () => typeof window !== 'undefined' && !!recognitionCtor()
+/** Fica true quando o reconhecimento falha por falta de serviço/permissão (ex.: navegador do app do Claude). */
+let recognitionBroken = false
+export const recognitionSupported = () => typeof window !== 'undefined' && !!recognitionCtor() && !recognitionBroken
 
 export interface ListenHandle {
   result: Promise<string[]>
@@ -179,8 +190,11 @@ export function listen(lang = 'zh-CN', timeoutMs = 7000): ListenHandle {
     }
     rec.onerror = (e) => {
       window.clearTimeout(timer)
-      if (e.error === 'no-speech') resolve([])
-      else reject(new Error(e.error))
+      if (e.error === 'no-speech' || e.error === 'aborted') resolve([])
+      else {
+        if (['network', 'not-allowed', 'service-not-allowed', 'audio-capture', 'language-not-supported'].includes(e.error)) recognitionBroken = true
+        reject(new Error(e.error))
+      }
     }
     rec.onend = () => {
       window.clearTimeout(timer)

@@ -7,6 +7,7 @@ App web (instalável no celular) para aprender chinês em português, com sessõ
 - **Trilha**: Fundação (os 4 tons, sons do pinyin, primeiros traços) + 6 lições do HSK 1 (cumprimentos, números, família, apresentações, comida, tempo).
 - **Modos ouvir/falar** na tela inicial: Silencioso, Escuta, Fala e Turbo (estilo Pimsleur). Dá para trocar no meio da sessão.
 - **Exercícios**: significado, escrever em hanzi, ouvir e escolher, identificar o tom, sons do pinyin, montar frase, ditado, falar em voz alta (com reconhecimento de voz quando o navegador permite) e traçar caracteres com macetes em português.
+- **Pronúncia**: áudio gravado (normal e bem devagar, botão da tartaruga), sílaba por sílaba, pinyin colorido por tom e dicas "Como falar" comparando com sons do português.
 - **Revisão espaçada** (caixas de Leitner): o que você erra volta logo; o que acerta demora mais para voltar.
 - **Gamificação**: XP, combo, ofensiva com congelamento, jiaozinhos (moeda), baú surpresa e sabedoria do dia.
 - **Caderno**: palavras aprendidas, caracteres com animação dos traços e coleção de sabedorias.

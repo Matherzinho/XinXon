@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Word } from '../../content'
 import { withChoices, wordDistractors } from '../../lib/session'
 import { speak } from '../../lib/speech'
-import { SpeakerButton } from '../ui'
+import { Pinyin, SpeakerButton } from '../ui'
 import type { ExerciseProps } from './types'
 
 /** Palavras: ver hanzi → escolher significado; ver português → escolher hanzi; ouvir → escolher hanzi. */
@@ -34,7 +34,9 @@ export function ChoiceExercise({ step, mode, box, locked, onAnswer }: ExercisePr
           <h2>O que significa?</h2>
           <div className="pop-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
             <div className="prompt-hz">{word.hanzi}</div>
-            <div className="prompt-py">{word.pinyin}</div>
+            <div className="prompt-py">
+              <Pinyin text={word.pinyin} />
+            </div>
             {mode.canListen && <SpeakerButton text={word.hanzi} small auto />}
           </div>
         </>
@@ -63,7 +65,11 @@ export function ChoiceExercise({ step, mode, box, locked, onAnswer }: ExercisePr
             ) : (
               <>
                 <span className="hz">{w.hanzi}</span>
-                {showPinyin && <span className="py">{w.pinyin}</span>}
+                {showPinyin && (
+                  <span className="py">
+                    <Pinyin text={w.pinyin} />
+                  </span>
+                )}
               </>
             )}
           </button>

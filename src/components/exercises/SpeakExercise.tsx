@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import type { Sentence, Word } from '../../content'
 import { bestMatch, listen, promptText, recognitionSupported, speak, type ListenHandle } from '../../lib/speech'
 import { Icon } from '../Icon'
-import { SpeakerButton } from '../ui'
+import { Pinyin, SpeakerButton, SyllableChips } from '../ui'
+import { SoundTips } from './Intro'
 import type { ExerciseProps } from './types'
 
 type Phase = 'ask' | 'answer' | 'reveal' | 'judge'
@@ -31,6 +32,7 @@ export function SpeakExercise({ step, mode, locked, onAnswer, onSkip }: Exercise
   const [heard, setHeard] = useState<string | null>(null)
   const [countdown, setCountdown] = useState(0)
   const handle = useRef<ListenHandle | null>(null)
+  const revealed = useRef(false)
   const reveal = { hanzi: t.hanzi, pinyin: t.pinyin, pt: t.pt }
 
   // Pimsleur: pergunta em português, depois espera a resposta.
@@ -65,6 +67,9 @@ export function SpeakExercise({ step, mode, locked, onAnswer, onSkip }: Exercise
   }, [countdown])
 
   async function showAnswer(score?: number) {
+    if (revealed.current) return
+    revealed.current = true
+    setCountdown(0)
     setPhase('reveal')
     if (mode.canListen) await speak(t.hanzi)
     if (score !== undefined) {
@@ -109,11 +114,15 @@ export function SpeakExercise({ step, mode, locked, onAnswer, onSkip }: Exercise
       {showText && (
         <div className="pop-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
           <div className={`prompt-hz${t.hanzi.length > 4 ? ' sm' : ''}`}>{t.hanzi}</div>
-          <div className="prompt-py">{t.pinyin}</div>
+          <div className="prompt-py">
+            <Pinyin text={t.pinyin} />
+          </div>
           {!pimsleur && <div className="muted">{t.pt}</div>}
           {mode.canListen && <SpeakerButton text={t.hanzi} small label="Ouvir o modelo" />}
+          {mode.canListen && <SyllableChips hanzi={t.hanzi} pinyin={t.pinyin} />}
         </div>
       )}
+      {!pimsleur && phase === 'answer' && <SoundTips pinyin={t.pinyin} />}
 
       {phase === 'ask' && <p className="center muted">Escute a pergunta…</p>}
 
@@ -142,7 +151,7 @@ export function SpeakExercise({ step, mode, locked, onAnswer, onSkip }: Exercise
       {phase === 'judge' && !autoGraded && !locked && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p className="center" style={{ fontWeight: 800 }}>
-            {mode.canListen ? 'Ficou parecido com o modelo?' : 'Você conseguiu falar?'}
+            {mode.canListen ? 'Repita junto com o áudio. Ficou parecido?' : 'Você conseguiu falar?'}
           </p>
           <div className="choices two">
             <button type="button" className="btn green" onClick={() => onAnswer(true, reveal)}>

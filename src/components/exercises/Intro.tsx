@@ -1,6 +1,6 @@
 import { CHARS, type Item, type Tip } from '../../content'
-import { TONE_NAMES } from '../../lib/pinyin'
-import { Mascot, SpeakerButton } from '../ui'
+import { soundTips, TONE_NAMES } from '../../lib/pinyin'
+import { Mascot, Pinyin, SpeakerButton, SyllableChips, ToneLegend } from '../ui'
 import { ToneShape } from './ToneExercise'
 
 /** Apresenta um item novo antes de testar. */
@@ -14,14 +14,15 @@ export function IntroCard({ item, canListen, onNext }: { item: Item; canListen: 
         </span>
         <div className="pop-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
           <div className="prompt-hz">{t.hanzi}</div>
-          <div className="prompt-py" style={{ fontSize: 30, color: 'var(--yellow)' }}>
-            {t.pinyin}
+          <div className="prompt-py">
+            <Pinyin text={t.pinyin} size={34} />
           </div>
           <ToneShape tone={t.tone} size={56} />
           <div style={{ fontWeight: 800 }}>{TONE_NAMES[t.tone]}</div>
           <div className="muted">significa “{t.pt}”</div>
           {canListen && <SpeakerButton text={t.hanzi} auto />}
         </div>
+        <SoundTips pinyin={t.pinyin} />
         <div className="grow" />
         <button type="button" className="btn block big" onClick={onNext}>
           Entendi!
@@ -39,12 +40,15 @@ export function IntroCard({ item, canListen, onNext }: { item: Item; canListen: 
       </span>
       <div className="pop-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
         <div className={`prompt-hz${w.hanzi.length > 3 ? ' sm' : ''}`}>{w.hanzi}</div>
-        <div className="prompt-py" style={{ color: 'var(--yellow)', fontSize: 24 }}>
-          {w.pinyin}
+        <div className="prompt-py">
+          <Pinyin text={w.pinyin} size={26} />
         </div>
         <div style={{ fontSize: 22, fontWeight: 900 }}>{w.pt}</div>
         {canListen && <SpeakerButton text={w.hanzi} auto />}
+        {canListen && <SyllableChips hanzi={w.hanzi} pinyin={w.pinyin} />}
+        <ToneLegend />
       </div>
+      <SoundTips pinyin={w.pinyin} />
       {w.note && <div className="card small">{w.note}</div>}
       {singles.map((c) => (
         <div key={c} className="card purple small" style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
@@ -84,6 +88,22 @@ export function TipCard({ tip, canListen, onNext, index, total }: { tip: Tip; ca
       <button type="button" className="btn block big" onClick={onNext}>
         {index + 1 < total ? 'Próximo' : 'Bora praticar!'}
       </button>
+    </div>
+  )
+}
+
+/** "Como falar": dicas em português para os sons difíceis da palavra. */
+export function SoundTips({ pinyin }: { pinyin: string }) {
+  const tips = soundTips(pinyin)
+  if (!tips.length) return null
+  return (
+    <div className="card small" style={{ gap: 6 }}>
+      <strong style={{ color: 'var(--yellow)' }}>Como falar</strong>
+      <ul className="tips-list">
+        {tips.map((t) => (
+          <li key={t}>{t}</li>
+        ))}
+      </ul>
     </div>
   )
 }
